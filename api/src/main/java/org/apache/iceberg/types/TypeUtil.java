@@ -64,12 +64,14 @@ public class TypeUtil {
       return schema;
     } else if (result != null) {
       if (schema.getAliases() != null) {
-        return new Schema(result.fields(), schema.getAliases());
+        return new Schema(
+            schema.schemaId(), result.fields(), schema.getAliases(), ImmutableSet.of());
       } else {
-        return new Schema(result.fields());
+        return new Schema(schema.schemaId(), result.fields());
       }
     }
-    return new Schema(Collections.emptyList(), schema.getAliases());
+    return new Schema(
+        schema.schemaId(), Collections.emptyList(), schema.getAliases(), ImmutableSet.of());
   }
 
   public static Types.StructType project(Types.StructType struct, Set<Integer> fieldIds) {
@@ -94,13 +96,15 @@ public class TypeUtil {
       return schema;
     } else if (result != null) {
       if (schema.getAliases() != null) {
-        return new Schema(result.fields(), schema.getAliases());
+        return new Schema(
+            schema.schemaId(), result.fields(), schema.getAliases(), ImmutableSet.of());
       } else {
-        return new Schema(result.fields());
+        return new Schema(schema.schemaId(), result.fields());
       }
     }
 
-    return new Schema(ImmutableList.of(), schema.getAliases());
+    return new Schema(
+        schema.schemaId(), ImmutableList.of(), schema.getAliases(), ImmutableSet.of());
   }
 
   /**
@@ -113,7 +117,7 @@ public class TypeUtil {
     Schema selected = select(schema, fieldIds);
     List<Types.NestedField> sorted = Lists.newArrayList(selected.columns());
     sorted.sort(Comparator.comparingInt(Types.NestedField::fieldId));
-    return new Schema(sorted);
+    return new Schema(schema.schemaId(), sorted);
   }
 
   public static Types.StructType select(Types.StructType struct, Set<Integer> fieldIds) {

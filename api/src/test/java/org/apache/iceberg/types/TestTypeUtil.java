@@ -970,4 +970,56 @@ public class TestTypeUtil {
     assertThat(TypeUtil.ancestorFields(schema, 16)).containsExactly(pointsElement, points);
     assertThat(TypeUtil.ancestorFields(schema, 17)).containsExactly(pointsElement, points);
   }
+
+  @Test
+  public void testProjectPreservesSchemaId() {
+    Schema schema =
+        new Schema(
+            42,
+            Lists.newArrayList(
+                required(10, "a", Types.IntegerType.get()),
+                required(11, "b", Types.IntegerType.get())));
+
+    Schema projected = TypeUtil.project(schema, Sets.newHashSet(10));
+    assertThat(projected.schemaId()).isEqualTo(42);
+  }
+
+  @Test
+  public void testProjectEmptyPreservesSchemaId() {
+    Schema schema =
+        new Schema(
+            7,
+            Lists.newArrayList(
+                required(10, "a", Types.IntegerType.get()),
+                required(11, "b", Types.IntegerType.get())));
+
+    Schema projected = TypeUtil.project(schema, Sets.newHashSet());
+    assertThat(projected.schemaId()).isEqualTo(7);
+  }
+
+  @Test
+  public void testSelectPreservesSchemaId() {
+    Schema schema =
+        new Schema(
+            5,
+            Lists.newArrayList(
+                required(10, "a", Types.IntegerType.get()),
+                required(11, "b", Types.IntegerType.get())));
+
+    Schema selected = TypeUtil.select(schema, Sets.newHashSet(10));
+    assertThat(selected.schemaId()).isEqualTo(5);
+  }
+
+  @Test
+  public void testSelectInIdOrderPreservesSchemaId() {
+    Schema schema =
+        new Schema(
+            3,
+            Lists.newArrayList(
+                required(11, "b", Types.IntegerType.get()),
+                required(10, "a", Types.IntegerType.get())));
+
+    Schema selected = TypeUtil.selectInIdOrder(schema, Sets.newHashSet(10, 11));
+    assertThat(selected.schemaId()).isEqualTo(3);
+  }
 }
